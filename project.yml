@@ -1,0 +1,57 @@
+name: ASCollectionFlexLayout
+options:
+  defaultConfig: Debug
+  createIntermediateGroups: true
+  transitivelyLinkDependencies: true
+  tabWidth: 2
+  indentWidth: 2
+
+settings:
+  base:
+    SWIFT_VERSION: 5.3
+    INFOPLIST_FILE: "$(SRCROOT)/Supporting Files/Info.plist"
+
+targets:
+  ASCollectionFlexLayout:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Sources/ASCollectionFlexLayout
+      - path: Supporting Files
+    settings:
+      PRODUCT_NAME: ASCollectionFlexLayout
+      PRODUCT_BUNDLE_IDENTIFIER: $(PRODUCT_NAME)
+    scheme:
+      testTargets:
+        - ASCollectionFlexLayoutTests
+      gatherCoverageData: true
+
+  ASCollectionFlexLayoutTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/ASCollectionFlexLayoutTests
+      - path: Supporting Files
+    dependencies:
+      - target: ASCollectionFlexLayout
+    settings:
+      PRODUCT_NAME: ASCollectionFlexLayoutTests
+      PRODUCT_BUNDLE_IDENTIFIER: $(PRODUCT_NAME)
+      WRAPPER_EXTENSION: xctest
+      BUNDLE_LOADER: $(TEST_HOST)
+    profile:
+      config: Debug
+
+  ASCollectionFlexLayoutExample:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/ASCollectionFlexLayoutExample
+      - path: Supporting Files
+    dependencies:
+      - sdk: Foundation.framework
+      - sdk: UIKit.framework
+      - target: ASCollectionFlexLayout
+    settings:
+      PRODUCT_NAME: ASCollectionFlexLayoutExample
+      PRODUCT_BUNDLE_IDENTIFIER: $(PRODUCT_NAME)
