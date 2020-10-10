@@ -19,6 +19,8 @@ final class ASCollectionFlexLayoutDelegateSpec: QuickSpec {
         scrollableDirections: ASScrollDirectionVerticalDirections,
         layoutProvider: layoutProvider
       ))
+      collectionNode.registerSupplementaryNode(ofKind: UICollectionView.elementKindSectionHeader)
+      collectionNode.registerSupplementaryNode(ofKind: UICollectionView.elementKindSectionFooter)
       collectionNode.frame = CGRect(x: 0, y: 0, width: 100, height: 1000)
       collectionNode.dataSource = dataSource
 
@@ -35,13 +37,13 @@ final class ASCollectionFlexLayoutDelegateSpec: QuickSpec {
     describe("Default layout") {
       it("aligns sections vertically with no line spacing") {
         collectionNode.sections = [
-          Section(items: [Item(width: 50, height: 50)]),
+          Section(footerHeight: 20, items: [Item(width: 50, height: 50)]),
           Section(items: [Item(width: 60, height: 60)]),
-          Section(items: [Item(width: 70, height: 70)]),
+          Section(headerHeight: 30, items: [Item(width: 70, height: 70)]),
         ]
         expect(collectionNode[0, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 0)
-        expect(collectionNode[1, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 50)
-        expect(collectionNode[2, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 110)
+        expect(collectionNode[1, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 70)
+        expect(collectionNode[2, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 160)
       }
 
       it("aligns items horizontally in sections with no spacing") {
@@ -51,7 +53,7 @@ final class ASCollectionFlexLayoutDelegateSpec: QuickSpec {
             Item(width: 20, height: 20),
             Item(width: 30, height: 30),
           ]),
-          Section(items: [
+          Section(headerHeight: 50, footerHeight: 70, items: [
             Item(width: 20, height: 20),
             Item(width: 40, height: 40),
             Item(width: 60, height: 60),
@@ -67,14 +69,14 @@ final class ASCollectionFlexLayoutDelegateSpec: QuickSpec {
         expect(collectionNode[0, 1]?.absoluteFrame.origin) == CGPoint(x: 10, y: 0)
         expect(collectionNode[0, 2]?.absoluteFrame.origin) == CGPoint(x: 30, y: 0)
 
-        expect(collectionNode[1, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 30)
-        expect(collectionNode[1, 1]?.absoluteFrame.origin) == CGPoint(x: 20, y: 30)
-        expect(collectionNode[1, 2]?.absoluteFrame.origin) == CGPoint(x: 0, y: 70) // wrap
+        expect(collectionNode[1, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 80)
+        expect(collectionNode[1, 1]?.absoluteFrame.origin) == CGPoint(x: 20, y: 80)
+        expect(collectionNode[1, 2]?.absoluteFrame.origin) == CGPoint(x: 0, y: 120) // wrap
 
-        expect(collectionNode[2, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 130)
-        expect(collectionNode[2, 1]?.absoluteFrame.origin) == CGPoint(x: 10, y: 130)
-        expect(collectionNode[2, 2]?.absoluteFrame.origin) == CGPoint(x: 40, y: 130)
-        expect(collectionNode[2, 3]?.absoluteFrame.origin) == CGPoint(x: 0, y: 180) // wrap
+        expect(collectionNode[2, 0]?.absoluteFrame.origin) == CGPoint(x: 0, y: 250)
+        expect(collectionNode[2, 1]?.absoluteFrame.origin) == CGPoint(x: 10, y: 250)
+        expect(collectionNode[2, 2]?.absoluteFrame.origin) == CGPoint(x: 40, y: 250)
+        expect(collectionNode[2, 3]?.absoluteFrame.origin) == CGPoint(x: 0, y: 300) // wrap
       }
 
       it("can set item's width as 100%") {
@@ -236,7 +238,9 @@ private extension ASCellNode {
 // MARK: - Section Model
 
 private struct Section {
-  let items: [Item]
+  var headerHeight: ASDimension? = nil
+  var footerHeight: ASDimension? = nil
+  var items: [Item]
 }
 
 struct Item {
@@ -258,7 +262,7 @@ private final class DataSourceObject: NSObject, ASCollectionDataSource {
     return self.sections[section].items.count
   }
 
-  func collectionView(_ collectionView: ASCollectionView, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
+  func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
     let item = self.sections[indexPath.section].items[indexPath.item]
     return {
       let node = ASCellNode()
@@ -269,6 +273,32 @@ private final class DataSourceObject: NSObject, ASCollectionDataSource {
         node.style.height = height
       }
       return node
+    }
+  }
+
+  func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> ASCellNodeBlock {
+    let section = self.sections[indexPath.section]
+    switch kind {
+    case UICollectionView.elementKindSectionHeader:
+      return {
+        let node = ASCellNode()
+        if let headerHeight = section.headerHeight {
+          node.style.height = headerHeight
+        }
+        return node
+      }
+
+    case UICollectionView.elementKindSectionFooter:
+      return {
+        let node = ASCellNode()
+        if let footerHeight = section.footerHeight {
+          node.style.height = footerHeight
+        }
+        return node
+      }
+
+    default:
+      return ASCellNode.init
     }
   }
 }

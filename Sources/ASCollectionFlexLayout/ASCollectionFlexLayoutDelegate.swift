@@ -36,10 +36,21 @@ import AsyncDisplayKit
     let orderedIndexMap = indexMap.lazy.sorted(by: { $0.key < $1.key })
 
     let itemLayoutSpecs: [ASLayoutElement] = orderedIndexMap.map { section, items in
+      let header = elementMap.supplementaryElement(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: section))?.node
+      let footer = elementMap.supplementaryElement(ofKind: UICollectionView.elementKindSectionFooter, at: IndexPath(item: 0, section: section))?.node
+
       let indexPaths = items.lazy.map { IndexPath(item: $0, section: section) }
-      let elements = indexPaths.compactMap { elementMap.elementForItem(at: $0) }
-      let children = Array(elements.map(\.node))
-      return self.itemLayoutSpec(with: context, section: section, children: children)
+      let itemElements = indexPaths.compactMap { elementMap.elementForItem(at: $0) }
+      let children = Array(itemElements.map(\.node))
+      let itemLayoutSpec = self.itemLayoutSpec(with: context, section: section, children: children)
+
+      return ASStackLayoutSpec(
+        direction: .vertical,
+        spacing: 0,
+        justifyContent: .start,
+        alignItems: .stretch,
+        children: [header, itemLayoutSpec, footer].compactMap { $0 }
+      )
     }
 
     let sectionLayoutSpec = self.sectionLayoutSpec(with: context, children: itemLayoutSpecs)
