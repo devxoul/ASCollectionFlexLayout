@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "ASCollectionFlexLayout"
-  s.version          = "1.0.0"
+  s.version          = "1.1.0"
   s.summary          = "A custom collection layout that allows to use Texture layout specs in ASCollectionNode."
   s.homepage         = "https://github.com/devxoul/ASCollectionFlexLayout"
   s.license          = { :type => "MIT", :file => "LICENSE" }
