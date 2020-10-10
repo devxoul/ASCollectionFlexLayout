@@ -59,7 +59,7 @@ final class ExampleViewController: ASDKViewController<ASCollectionNode> {
 }
 
 extension ExampleViewController: ASCollectionFlexLayoutProvider {
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
     return ASStackLayoutSpec(
       direction: .vertical,
       spacing: 50,
@@ -69,7 +69,7 @@ extension ExampleViewController: ASCollectionFlexLayoutProvider {
     )
   }
 
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
     let section = self.sections[section]
     return ASStackLayoutSpec(
       direction: .horizontal,
