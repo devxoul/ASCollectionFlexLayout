@@ -27,18 +27,20 @@ There are two kind of layout specs in ASCollectionFlexLayout:
 You can optionally provide each layout specs by implementing `ASCollectionFlexLayoutProvider` protocol.
 
 ```swift
-/// A layout spec for sections. The default layout spec is a stretched stack layout with no spacing.
-func layoutSpecThatFits(_ constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec?
+protocol ASCollectionFlexLayoutProvider {
+  /// A layout spec for sections. The default layout spec is a stretched stack layout with no spacing.
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec?
 
-/// A layout spec for items in a section. The default layout spec is a flex-wrapping stack with no spacing.
-func layoutSpecThatFits(_ constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec?
+  /// A layout spec for items in a section. The default layout spec is a flex-wrapping stack with no spacing.
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec?
+}
 ```
 
 For example:
 
 ```swift
 extension MyViewController: ASCollectionFlexLayoutProvider {
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
     return ASStackLayoutSpec(
       direction: .vertical,
       spacing: 20,
@@ -48,7 +50,7 @@ extension MyViewController: ASCollectionFlexLayoutProvider {
     )
   }
 
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
     return ASStackLayoutSpec(
       direction: .horizontal,
       spacing: 10,
