@@ -23,7 +23,7 @@ import AsyncDisplayKit
   }
 
   public func additionalInfoForLayout(withElements elements: ASElementMap) -> Any? {
-    return AdditionalInfo(layoutProvider: self.layoutProvider)
+    return AdditionalInfo(layout: self.layout, layoutProvider: self.layoutProvider)
   }
 
   public static func calculateLayout(with context: ASCollectionLayoutContext) -> ASCollectionLayoutState {
@@ -65,7 +65,9 @@ import AsyncDisplayKit
   private static func sectionLayoutSpec(with context: ASCollectionLayoutContext, children: [ASLayoutElement]) -> ASLayoutSpec {
     let constrainedSize = context.constrainedSize()
     let layoutSpec: ASLayoutSpec = {
-      if let layoutSpec = context.layoutProvider?.layoutSpecThatFits?(constrainedSize, sectionElements: children) {
+      if let layout = context.layout,
+        let layoutProvider = context.layoutProvider,
+        let layoutSpec = layoutProvider.flexLayout?(layout, layoutSpecThatFits: constrainedSize, sectionElements: children) {
         return layoutSpec
       }
       let defaultLayoutSpec = ASCollectionFlexLayout.defaultLayoutSpecThatFits(constrainedSize, sectionElements: children)
@@ -79,7 +81,9 @@ import AsyncDisplayKit
 
   private static func itemLayoutSpec(with context: ASCollectionLayoutContext, section: Int, children: [ASLayoutElement]) -> ASLayoutSpec {
     let constrainedSize = context.constrainedSize()
-    if let layoutSpec = context.layoutProvider?.layoutSpecThatFits?(constrainedSize, forSectionAt: section, itemElements: children) {
+    if let layout = context.layout,
+       let layoutProvider = context.layoutProvider,
+       let layoutSpec = layoutProvider.flexLayout?(layout, layoutSpecThatFits: constrainedSize, forSectionAt: section, itemElements: children) {
       return layoutSpec
     }
     let defaultLayoutSpec = ASCollectionFlexLayout.defaultLayoutSpecThatFits(constrainedSize, forSectionAt: section, itemElements: children)
@@ -88,13 +92,21 @@ import AsyncDisplayKit
 }
 
 private struct AdditionalInfo {
+  let layout: ASCollectionFlexLayout?
   let layoutProvider: ASCollectionFlexLayoutProvider?
 }
 
 private extension ASCollectionLayoutContext {
+  var layout: ASCollectionFlexLayout? {
+    return self.info?.layout
+  }
+
   var layoutProvider: ASCollectionFlexLayoutProvider? {
-    let additionalInfo = self.additionalInfo as? AdditionalInfo
-    return additionalInfo?.layoutProvider
+    return self.info?.layoutProvider
+  }
+
+  private var info: AdditionalInfo? {
+    return self.additionalInfo as? AdditionalInfo
   }
 
   func constrainedSize() -> ASSizeRange {

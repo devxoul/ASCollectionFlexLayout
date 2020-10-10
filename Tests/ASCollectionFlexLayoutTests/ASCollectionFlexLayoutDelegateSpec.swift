@@ -280,11 +280,11 @@ private final class LayoutProviderObject: NSObject, ASCollectionFlexLayoutProvid
   var collectionLayoutSpecBlock: ((_ constrainedSize: ASSizeRange, _ sectionElements: [ASLayoutElement]) -> ASLayoutSpec?)?
   var sectionLayoutSpecBlock: ((_ constrainedSize: ASSizeRange, _ section: Int, _ itemElements: [ASLayoutElement]) -> ASLayoutSpec?)?
 
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec? {
     return self.collectionLayoutSpecBlock?(constrainedSize, sectionElements)
   }
 
-  func layoutSpecThatFits(_ constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
     return self.sectionLayoutSpecBlock?(constrainedSize, section, itemElements)
   }
 }
