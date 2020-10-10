@@ -3,6 +3,7 @@ import AsyncDisplayKit
 
 @objcMembers public class ASCollectionFlexLayoutDelegate: NSObject, ASCollectionLayoutDelegate {
   private var _scrollableDirections: ASScrollDirection
+  public weak var layout: ASCollectionFlexLayout?
   public weak var layoutProvider: ASCollectionFlexLayoutProvider?
 
   private typealias Section = Int
