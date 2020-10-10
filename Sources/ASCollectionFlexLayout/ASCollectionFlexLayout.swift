@@ -9,6 +9,27 @@
     return self.layoutDelegate as? ASCollectionFlexLayoutDelegate
   }
 
+  public var defaultSectionLayoutSpec: ASStackLayoutSpec = ASStackLayoutSpec(
+    direction: .vertical,
+    spacing: 0,
+    justifyContent: .start,
+    alignItems: .stretch,
+    flexWrap: .noWrap,
+    alignContent: .start,
+    lineSpacing: 0,
+    children: []
+  )
+  public var defaultItemLayoutSpec: ASStackLayoutSpec = ASStackLayoutSpec(
+    direction: .horizontal,
+    spacing: 0,
+    justifyContent: .start,
+    alignItems: .start,
+    flexWrap: .wrap,
+    alignContent: .start,
+    lineSpacing: 0,
+    children: []
+  )
+
   public override init(
     scrollableDirections: ASScrollDirection = ASScrollDirectionVerticalDirections,
     layoutProvider: ASCollectionFlexLayoutProvider? = nil
@@ -18,32 +39,6 @@
 
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-  }
-
-  public static func defaultLayoutSpecThatFits(_ constrainedSize: ASSizeRange, sectionElements: [ASLayoutElement]) -> ASLayoutSpec {
-    return ASStackLayoutSpec(
-      direction: .vertical,
-      spacing: 0,
-      justifyContent: .start,
-      alignItems: .stretch,
-      flexWrap: .noWrap,
-      alignContent: .start,
-      lineSpacing: 0,
-      children: sectionElements
-    )
-  }
-
-  public static func defaultLayoutSpecThatFits(_ constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec {
-    return ASStackLayoutSpec(
-      direction: .horizontal,
-      spacing: 0,
-      justifyContent: .start,
-      alignItems: .start,
-      flexWrap: .wrap,
-      alignContent: .start,
-      lineSpacing: 0,
-      children: itemElements
-    )
   }
 
   public override func asdk_layoutInspector() -> ASCollectionViewLayoutInspecting {

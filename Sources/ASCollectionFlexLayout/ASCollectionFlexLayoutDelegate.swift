@@ -63,14 +63,15 @@ import AsyncDisplayKit
   }
 
   private static func sectionLayoutSpec(with context: ASCollectionLayoutContext, children: [ASLayoutElement]) -> ASLayoutSpec {
-    let constrainedSize = context.constrainedSize()
+    guard let layout = context.layout else { return ASLayoutSpec() }
+
     let layoutSpec: ASLayoutSpec = {
-      if let layout = context.layout,
-        let layoutProvider = context.layoutProvider,
-        let layoutSpec = layoutProvider.flexLayout?(layout, layoutSpecThatFits: constrainedSize, sectionElements: children) {
+      if let layoutSpec = context.layoutProvider?.flexLayout?(layout, layoutSpecThatFits: context.constrainedSize(), sectionElements: children) {
         return layoutSpec
       }
-      let defaultLayoutSpec = ASCollectionFlexLayout.defaultLayoutSpecThatFits(constrainedSize, sectionElements: children)
+
+      let defaultLayoutSpec = ASStackLayoutSpec.copied(from: layout.defaultSectionLayoutSpec)
+      defaultLayoutSpec.children = children
       return defaultLayoutSpec
     }()
 
@@ -80,14 +81,32 @@ import AsyncDisplayKit
   }
 
   private static func itemLayoutSpec(with context: ASCollectionLayoutContext, section: Int, children: [ASLayoutElement]) -> ASLayoutSpec {
-    let constrainedSize = context.constrainedSize()
-    if let layout = context.layout,
-       let layoutProvider = context.layoutProvider,
-       let layoutSpec = layoutProvider.flexLayout?(layout, layoutSpecThatFits: constrainedSize, forSectionAt: section, itemElements: children) {
+    guard let layout = context.layout else { return ASLayoutSpec() }
+
+    if let layoutSpec = context.layoutProvider?.flexLayout?(layout, layoutSpecThatFits: context.constrainedSize(), forSectionAt: section, itemElements: children) {
       return layoutSpec
     }
-    let defaultLayoutSpec = ASCollectionFlexLayout.defaultLayoutSpecThatFits(constrainedSize, forSectionAt: section, itemElements: children)
+
+    let defaultLayoutSpec = ASStackLayoutSpec.copied(from: layout.defaultItemLayoutSpec)
+    defaultLayoutSpec.children = children
     return defaultLayoutSpec
+  }
+}
+
+private extension ASStackLayoutSpec {
+  static func copied(from original: ASStackLayoutSpec) -> ASStackLayoutSpec {
+    let layoutSpec = ASStackLayoutSpec(
+      direction: original.direction,
+      spacing: original.spacing,
+      justifyContent: original.justifyContent,
+      alignItems: original.alignItems,
+      flexWrap: original.flexWrap,
+      alignContent: original.alignContent,
+      lineSpacing: original.lineSpacing,
+      children: original.children ?? []
+    )
+    layoutSpec.isConcurrent = original.isConcurrent
+    return layoutSpec
   }
 }
 
