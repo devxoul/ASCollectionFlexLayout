@@ -86,7 +86,6 @@ import AsyncDisplayKit
       return defaultLayoutSpec
     }()
 
-    (layoutSpec as? ASStackLayoutSpec)?.isConcurrent = true
     layoutSpec.style.preferredLayoutSize.width = ASDimensionMake(.fraction, 1)
     return layoutSpec
   }
