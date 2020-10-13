@@ -6,7 +6,7 @@ ASCollectionFlexLayout is a custom collection layout that allows to use Texture 
 
 ## Usage
 
-### Create a layout
+### Creating a layout
 
 ```swift
 let layout = ASCollectionFlexLayout()
@@ -17,7 +17,7 @@ let collectionNode = ASCollectionNode(collectionViewLayout: layout)
 
 If you don't specify the `layoutProvider`, it will use a `ASStackLayout` as default.
 
-### Implement ASCollectionFlexLayoutProvider protocol
+### Implementing ASCollectionFlexLayoutProvider protocol
 
 There are two kind of layout specs in ASCollectionFlexLayout:
 
@@ -62,6 +62,26 @@ extension MyViewController: ASCollectionFlexLayoutProvider {
       children: itemElements
     )
   }
+}
+```
+
+### Using the default layout
+
+You can modify the default layout to apply layout without implementing `ASCollectionFlexLayoutProvider` protocol.
+
+```swift
+let layout = ASCollectionFlexLayout()
+layout.defaultSectionLayout.alignItems = .center
+layout.defaultItemLayout.direction = .vertical
+layout.defaultItemLayout.alignItems = .stretch
+```
+
+Also you can directly refer to the default layout in the `ASCollectionFlexLayoutProvider` protocol implementation.
+
+```swift
+func flexLayout(_ layout: ASCollectionFlexLayout, layoutSpecThatFits constrainedSize: ASSizeRange, forSectionAt section: Int, itemElements: [ASLayoutElement]) -> ASLayoutSpec? {
+  let insets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 20)
+  return ASInsetLayoutSpec(insets: insets, child: layout.defaultItemLayout)
 }
 ```
 
